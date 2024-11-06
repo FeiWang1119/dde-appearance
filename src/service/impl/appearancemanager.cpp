@@ -15,6 +15,7 @@
 #include "modules/dconfig/phasewallpaper.h"
 #include "modules/subthemes/customtheme.h"
 
+#include <dguiapplicationhelper.h>
 #include <xcb/randr.h>
 #include <xcb/xcb.h>
 
@@ -38,6 +39,7 @@
 #define DEFAULT_WORKSPACE_COUNT (2) // 默认工作区数量
 
 DCORE_USE_NAMESPACE
+DGUI_USE_NAMESPACE
 
 AppearanceManager::AppearanceManager(AppearanceProperty *prop, QObject *parent)
     : QObject(parent)
@@ -583,6 +585,11 @@ void AppearanceManager::setQtScrollBarPolicy(int value)
     }
 }
 
+void AppearanceManager::setActiveColors(const QString &value)
+{
+    m_settingDconfig.setValue(DACTIVECOLORS, value);
+}
+
 void AppearanceManager::setWindowRadius(int value)
 {
     if (value != m_property->windowRadius && m_xSetting) {
@@ -604,9 +611,12 @@ void AppearanceManager::setOpacity(double value)
 void AppearanceManager::setQtActiveColor(const QString &value)
 {
     if (value != m_property->qtActiveColor && m_xSetting) {
-        m_xSetting->set(GSKEYQTACTIVECOLOR, hexColorToQtActiveColor(value));
-        m_property->qtActiveColor = value;
-        updateCustomTheme(TYPEACTIVECOLOR, value);
+        QStringList colors = m_settingDconfig.value(DACTIVECOLORS).toString().split(',');
+        QString result = DGuiApplicationHelper::instance()->themeType() == DGuiApplicationHelper::LightType ?
+            colors.value(0) : colors.value(1);
+        m_xSetting->set(GSKEYQTACTIVECOLOR, hexColorToQtActiveColor(result));
+        m_property->qtActiveColor = result;
+        updateCustomTheme(TYPEACTIVECOLOR, result);
     }
 }
 
@@ -1893,6 +1903,11 @@ void AppearanceManager::doSetQtScrollBarPolicy(int value)
         setQtScrollBarPolicy(value);
         m_dbusProxy->SetInteger("Qt/ScrollBarPolicy",value);
     }
+}
+
+QString AppearanceManager::getActiveColors()
+{
+    return m_settingDconfig.value(DACTIVECOLORS).toString();
 }
 
 void AppearanceManager::autoChangeBg(QString monitorSpace, QDateTime date)

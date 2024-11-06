@@ -43,6 +43,7 @@ extern QDBusConnection *pluginDbus;
 #define DCKEYALLWALLPAPER        "All_Wallpaper_Uris"
 #define DDTKSIZEMODE             "Dtk_Size_Mode"
 #define DQTSCROLLBARPOLICY        "Qt_Scrollbar_Policy"
+#define DACTIVECOLORS            "Active_Colors"
 
 #define GTK2CONFDELIM            "="
 #define GTK3GROUPSETTINGS        "Settings"

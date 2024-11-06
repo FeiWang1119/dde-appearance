@@ -209,6 +209,13 @@ ScaleFactors Appearance1Thread::GetScreenScaleFactors(const QDBusMessage &messag
     return ScaleFactors();
 }
 
+QString Appearance1Thread::GetActiveColors(const QDBusMessage &message)
+{
+    QMutexLocker locker(&mutex);
+    APPEARANCEDBUS.send(message.createReply(QVariant::fromValue(appearanceManager->getActiveColors())));
+    return QString();
+}
+
 QString Appearance1Thread::GetWallpaperSlideShow(const QString &monitorName, const QDBusMessage &message)
 {
     QMutexLocker locker(&mutex);
@@ -285,6 +292,13 @@ void Appearance1Thread::SetScreenScaleFactors(ScaleFactors scaleFactors, const Q
     Q_UNUSED(message);
     QMutexLocker locker(&mutex);
     appearanceManager->setScreenScaleFactors(scaleFactors);
+}
+
+void Appearance1Thread::SetActiveColors(const QString &activeColors, const QDBusMessage &message)
+{
+    Q_UNUSED(message);
+    QMutexLocker locker(&mutex);
+    appearanceManager->setActiveColors(activeColors);
 }
 
 void Appearance1Thread::SetWallpaperSlideShow(const QString &monitorName, const QString &slideShow, const QDBusMessage &message)
